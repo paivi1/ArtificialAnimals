@@ -61,7 +61,7 @@ public class HerbAct : MonoBehaviour {
 		for (int i = 0; i < seen.Length; i++) {
 			//Debug.Log(seen[i]);
 			//Debug.Log(seen[i].tag);
-			if (seen[i].tag == "Grass") {
+			if (seen[i].tag == "Leafy") {
 				focus = seen[i].gameObject;
 				Debug.Log(focus);
 				
