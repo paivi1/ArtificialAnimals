@@ -12,7 +12,7 @@ public class PlantAct : MonoBehaviour {
 		rb2d = GetComponent<Rigidbody2D>();
 		controller = GetComponent<PlantController>();
 		InvokeRepeating("PhotoSyn", 5.0f, 5.0f);
-		InvokeRepeating("Reproduce", 2.0f, 10.0f);
+		InvokeRepeating("Reproduce", 10.0f, 15.0f);
 	}
 	
 	// Update is called once per frame
@@ -30,7 +30,6 @@ public class PlantAct : MonoBehaviour {
 
 	void Reproduce(){
 		if (controller.GetHealth() > 30) {
-			Debug.Log("Reproducing!");
 			float x = this.transform.position.x + Random.Range(-2.0f, 2.0f);
 			float y = this.transform.position.y + Random.Range(-2.0f, 2.0f);
 			Vector2 birthplace = new Vector2(x,y);

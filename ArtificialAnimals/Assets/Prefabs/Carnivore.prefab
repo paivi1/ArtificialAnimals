@@ -12,9 +12,11 @@ GameObject:
   - component: {fileID: 5856995232971449148}
   - component: {fileID: 5856995232971449123}
   - component: {fileID: 5856995232971449122}
+  - component: {fileID: 1630790240}
+  - component: {fileID: 1630790241}
   m_Layer: 0
   m_Name: Carnivore
-  m_TagString: Untagged
+  m_TagString: LargeMeat
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118,3 +120,35 @@ CircleCollider2D:
   m_Offset: {x: -0.0024524133, y: 0}
   serializedVersion: 2
   m_Radius: 0.17839412
+--- !u!114 &1630790240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5856995232971449121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c605661febdc646a7383dad43108af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  focus: {fileID: 0}
+--- !u!114 &1630790241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5856995232971449121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 689cdfe579d07b940b83cab80fe7ad7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vision: 20
+  hunted: 0
+  fullness: 120
+  hydration: 100
+  health: 100
+  diet: carnivore

@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HerbAct : MonoBehaviour {
-
-	public float speed = 10;
-	private GameObject focus;
+public class CarnivoreActuator : MonoBehaviour
+{
+    public float speed = 10;
+	[SerializeField]
+    private GameObject focus;
 	private Vector2 direction;
 
 
 	private Rigidbody2D rb2d;
-	private HerbController controller;
+	private CarnivoreController controller;
 
 
 	// Use this for initialization
 	void Start () {
 		rb2d = GetComponent<Rigidbody2D>();
-		controller = GetComponent<HerbController>();
+		controller = GetComponent<CarnivoreController>();
 		
 	}
 	
@@ -35,6 +36,7 @@ public class HerbAct : MonoBehaviour {
 
 	void Wander(){
 			Vector2 bias = new Vector2(0,0);
+            Vector2 currentPos = this.transform.position;
 			float xMove = Random.Range(-10.0f, 10.0f);
 			float yMove = Random.Range(-10.0f, 10.0f);
 
@@ -42,15 +44,16 @@ public class HerbAct : MonoBehaviour {
 
 		if (focus == null){
 			Perceive();
+            Vector2 newPos = new Vector2(16, 9);
+            bias = Vector3.Normalize(new Vector2(newPos.x - currentPos.x, newPos.y - currentPos.y));
 		} 
 		else {
 			
 
 			Vector2 newPos = focus.transform.position;
-			Vector2 currentPos = this.transform.position;
 			float distance = Mathf.Sqrt(Mathf.Pow(newPos.x - currentPos.x, 2) + Mathf.Pow(newPos.y - currentPos.y,2));
 
-			if (distance < 0.5) {
+			if (distance < 1.5) {
 				Consume(focus);
 			}
 			else {
@@ -60,7 +63,7 @@ public class HerbAct : MonoBehaviour {
 			 
 		}
 
-		direction += bias*0.3f;
+		direction += bias*1.0f;
 		rb2d.AddForce(direction * speed);
 	}
 
@@ -70,9 +73,8 @@ public class HerbAct : MonoBehaviour {
 		
 		
 		for (int i = 0; i < seen.Length; i++) {
-			if (seen[i].tag == "Leafy" && controller.fullness < 80) {
+			if (seen[i].tag == "MediumMeat" && controller.fullness < 80) {
 				focus = seen[i].gameObject;
-				
 			}
 			else {
 				continue;
@@ -82,6 +84,7 @@ public class HerbAct : MonoBehaviour {
 	}
 
 	void Consume(GameObject item){
+        Debug.Log("<color=red>" + "EATEN: " + item.name + "!</color>");
 		Destroy(item);
 		controller.fullness += 20;
 	}
