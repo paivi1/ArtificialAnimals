@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1630790241}
   m_Layer: 0
   m_Name: Carnivore
-  m_TagString: LargeMeat
+  m_TagString: Wolf
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  focus: {fileID: 0}
+  posFocus: {fileID: 0}
 --- !u!114 &1630790241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,4 +151,5 @@ MonoBehaviour:
   fullness: 120
   hydration: 100
   health: 100
+  age: 1
   diet: carnivore

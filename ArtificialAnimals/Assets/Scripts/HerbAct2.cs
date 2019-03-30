@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HerbAct : MonoBehaviour {
+public class HerbAct2 : MonoBehaviour {
 
 	public float speed = 1; //Animal speed
     public float angle; //Current angle of the animals body (an angle of zero means it's facing towards the top of the screen)

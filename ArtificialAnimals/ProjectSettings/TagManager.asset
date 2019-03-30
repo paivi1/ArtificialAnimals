@@ -7,6 +7,9 @@ TagManager:
   - Leafy
   - MediumMeat
   - LargeMeat
+  - Flower
+  - Deer
+  - Wolf
   layers:
   - Default
   - TransparentFX

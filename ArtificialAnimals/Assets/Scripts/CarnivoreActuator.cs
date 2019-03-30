@@ -6,7 +6,8 @@ public class CarnivoreActuator : MonoBehaviour
 {
     public float speed = 10;
 	[SerializeField]
-    private GameObject focus;
+    private GameObject posFocus;
+	private GameObject negFocus;
 	private Vector2 direction;
 
 
@@ -42,19 +43,19 @@ public class CarnivoreActuator : MonoBehaviour
 
 			direction = Vector3.Normalize(new Vector2(xMove, yMove));
 
-		if (focus == null){
+		if (posFocus == null){
 			Perceive();
-            Vector2 newPos = new Vector2(16, 9);
+            Vector2 newPos = new Vector2(20, 11);
             bias = Vector3.Normalize(new Vector2(newPos.x - currentPos.x, newPos.y - currentPos.y));
 		} 
 		else {
 			
 
-			Vector2 newPos = focus.transform.position;
+			Vector2 newPos = posFocus.transform.position;
 			float distance = Mathf.Sqrt(Mathf.Pow(newPos.x - currentPos.x, 2) + Mathf.Pow(newPos.y - currentPos.y,2));
 
 			if (distance < 1.5) {
-				Consume(focus);
+				Consume(posFocus);
 			}
 			else {
 				bias = Vector3.Normalize(new Vector2(newPos.x - currentPos.x, newPos.y - currentPos.y));
@@ -68,13 +69,14 @@ public class CarnivoreActuator : MonoBehaviour
 	}
 
 	void Perceive(){
+
 		Collider2D[] seen = Physics2D.OverlapCircleAll(this.transform.position, controller.vision);
-		
-		
+		//Collider2D[] pushs;
+		//Collider2D[] pulls;
 		
 		for (int i = 0; i < seen.Length; i++) {
-			if (seen[i].tag == "MediumMeat" && controller.fullness < 80) {
-				focus = seen[i].gameObject;
+			if (seen[i].tag == "Deer" && controller.fullness < 80) {
+				posFocus = seen[i].gameObject;
 			}
 			else {
 				continue;

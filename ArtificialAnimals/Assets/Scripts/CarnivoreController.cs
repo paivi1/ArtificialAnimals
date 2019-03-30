@@ -9,6 +9,7 @@ public class CarnivoreController : MonoBehaviour
 	public float fullness = 100;
 	public float hydration = 100;
 	public float health = 100;
+	public float age = 1;
 	public string diet = "carnivore";
 
 	// Use this for initialization
@@ -34,6 +35,7 @@ public class CarnivoreController : MonoBehaviour
 		else {
 			health -= 2;
 		}
+		age++;
 	}
 
 	public float GetFullness(){
