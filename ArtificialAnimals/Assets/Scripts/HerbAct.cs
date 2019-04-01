@@ -84,28 +84,30 @@ public class HerbAct : MonoBehaviour {
             //This bit of code here checks if the object is within a certain angle (think of it as it only seeing things in front of it)
             //This way, it only "sees" things within its viewAngle, otherwise it goes unseen
             //Right now, controller.viewAngle is 180 degrees (both left and right) so it can see everything around it. This can be changed for more realism
-            float xdif = seen[i].transform.position.x - transform.position.x;
-            float ydif = seen[i].transform.position.y - transform.position.y;
-            Vector2 toObj = new Vector2(xdif, ydif);
-            float ang = Vector2.SignedAngle(toObj, transform.up);
+            // float xdif = seen[i].transform.position.x - transform.position.x;
+            // float ydif = seen[i].transform.position.y - transform.position.y;
+            // Vector2 toObj = new Vector2(xdif, ydif);
+            // float ang = Vector2.SignedAngle(toObj, transform.up);
 
-            if  ((ang < controller.viewAngle) && (ang > -controller.viewAngle)){
-                Debug.Log("I see " + seen[i]);
-
-                if (seen[i].tag == "Flower" && controller.fullness < 50) {
-                    interests.Add(seen[i].gameObject);
+            // if  ((ang < controller.viewAngle) && (ang > -controller.viewAngle)){
+            //      Debug.Log("I see " + seen[i]);
+            
+            switch (seen[i].tag) {
+                    case "Flower":
+                        if (controller.fullness < 50){
+                            interests.Add(seen[i].gameObject);
+                        }
+                        break;
+                    case "Deer":
+                        group.Add(seen[i].gameObject);
+                        break;
+                    case "Wolf":
+                        threats.Add(seen[i].gameObject);
+                        break;
+                    default:
+                        break;
                 }
-                if (seen[i].tag == "Deer") {
-                    group.Add(seen[i].gameObject);
-                }
-                if (seen[i].tag == "Wolf") {
-                    threats.Add(seen[i].gameObject);
-                }
-            }
-            else {
-                
-            }
-
+            //}
 			
 		}
         //After perceiving, it prioritizes with new information

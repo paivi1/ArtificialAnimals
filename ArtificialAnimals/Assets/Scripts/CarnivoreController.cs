@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class CarnivoreController : MonoBehaviour
 {
-    public float vision = 20;
-	public bool hunted = false;
-	public float fullness = 100;
-	public float hydration = 100;
-	public float health = 100;
-	public float age = 1;
-	public string diet = "carnivore";
+    public float vision;
+	public float viewAngle;
+	public float fullness;
+	public float hydration;
+	public float health;
+	public float age;
+	public float energy;
+	public string diet;
+	public int state;
 
 	// Use this for initialization
 	void Start () {
+		viewAngle = 180;
+		vision = 20;
+		fullness = 100;
+		hydration = 100;
+		health = 100;
+		age = 1;
+		energy = 100;
+		state = 0;
+		diet = "carnivore";
 		InvokeRepeating("Metabolize", 1.0f, 1.0f);
 	}
 	
@@ -25,12 +36,24 @@ public class CarnivoreController : MonoBehaviour
 	void Metabolize(){
 		if (fullness > 0) {
 			fullness -= 2;
+			if (health < 100){
+				health += 2;
+			}
+			if (energy < 100) {
+				energy += 1;
+			}
 		}
 		else {
 			health -= 0.5f;
 		}
 		if (hydration > 0) {
 			hydration -= 0.5f;
+			if( health < 100){
+				health += 1;
+			}
+			if (energy < 100) {
+				energy += 2;
+			}
 		}
 		else {
 			health -= 2;
