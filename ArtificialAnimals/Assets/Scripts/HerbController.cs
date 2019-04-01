@@ -17,7 +17,7 @@ public class HerbController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		viewAngle = 180;
-		fullness = 50;
+		fullness = 100;
 		hydration = 100;
 		health = 100;
 		energy = 100;
@@ -57,6 +57,10 @@ public class HerbController : MonoBehaviour {
 		}
 		else {
 			health -= 2;
+		}
+		if (health <= 0) {
+			Destroy(this.gameObject);
+			Debug.Log("<color=yellow>" + this.gameObject.name + "'s health fell to zero and died" +  "!</color>");
 		}
 		age++;
 	}

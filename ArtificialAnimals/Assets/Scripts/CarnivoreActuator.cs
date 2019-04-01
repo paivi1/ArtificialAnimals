@@ -131,8 +131,6 @@ public class CarnivoreActuator : MonoBehaviour
         }
         else {
             turn = Random.Range(-2.0f, 2.0f);
-            Debug.Log("Where are my homies?");
-            Debug.Log(name);
         }
         //This is how rotation works. The angle is the current angle, turn is added to change it slightly. Modulo is just to keep angle within 360 degrees
         angle += 1 * turn;
@@ -186,8 +184,13 @@ public class CarnivoreActuator : MonoBehaviour
     //Eat the object of interest, increase fullness
     void Consume(GameObject item){
 		Destroy(item);
-		controller.fullness += 20;
-        Debug.Log("<color=red>" + "EATEN: " + item.name + "!</color>");
+		controller.fullness += 15;
+        Debug.Log("<color=red>" + this.gameObject.name + "ate " + item.name + "!</color>");
+
+        for (int peer = 1; peer < group.Count; peer++){
+			group[peer].GetComponent<CarnivoreController>().fullness += 15;
+            Debug.Log("<color=green>" + this.gameObject.name + " shared some food with" +  group[peer].name + "!</color>");
+		}
         
 	}
 

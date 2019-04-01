@@ -22,6 +22,9 @@ public class HerbAct : MonoBehaviour {
     private List<GameObject> threats; //Stores a list of gameobjects that are threats (Wolf)
     [SerializeField]
     private List<GameObject> interests; //Stores a list of gameobjects that are of interest (Flower). I hope to expand this to water as well
+    [SerializeField]
+    private List<GameObject> leafy;
+    private RaycastHit2D hit;
 
 
 	// Initialization initilaizes it's components (connects to its controller, rigidbody2d)
@@ -31,6 +34,7 @@ public class HerbAct : MonoBehaviour {
 		rb2d = GetComponent<Rigidbody2D>();
 		controller = GetComponent<HerbController>();
 		angle = Random.Range(0, 360);
+        leafy = new List<GameObject>();
 		//InvokeRepeating("TurnTowards", 0.0f, 0.1f);
 		InvokeRepeating("Perceive", 0.0f, 0.5f);
 		
@@ -80,19 +84,10 @@ public class HerbAct : MonoBehaviour {
 
         //Here we sort the percieved objects into three categories
 		for (int i = 0; i < seen.Length; i++) {
-
-            //This bit of code here checks if the object is within a certain angle (think of it as it only seeing things in front of it)
-            //This way, it only "sees" things within its viewAngle, otherwise it goes unseen
-            //Right now, controller.viewAngle is 180 degrees (both left and right) so it can see everything around it. This can be changed for more realism
-            // float xdif = seen[i].transform.position.x - transform.position.x;
-            // float ydif = seen[i].transform.position.y - transform.position.y;
-            // Vector2 toObj = new Vector2(xdif, ydif);
-            // float ang = Vector2.SignedAngle(toObj, transform.up);
-
-            // if  ((ang < controller.viewAngle) && (ang > -controller.viewAngle)){
-            //      Debug.Log("I see " + seen[i]);
+            hit = Physics2D.Linecast(transform.position, seen[i].transform.position, 8);
             
-            switch (seen[i].tag) {
+            if (hit.collider == null){
+                switch (seen[i].tag) {
                     case "Flower":
                         if (controller.fullness < 50){
                             interests.Add(seen[i].gameObject);
@@ -104,12 +99,33 @@ public class HerbAct : MonoBehaviour {
                     case "Wolf":
                         threats.Add(seen[i].gameObject);
                         break;
+                    case "Leafy":
+                        leafy.Add(seen[i].gameObject);
+                        break;
                     default:
                         break;
                 }
+            }
+            else{
+                Debug.Log(hit.collider.name);
+            }
+                
+        }
+            //This bit of code here checks if the object is within a certain angle (think of it as it only seeing things in front of it)
+            //This way, it only "sees" things within its viewAngle, otherwise it goes unseen
+            //Right now, controller.viewAngle is 180 degrees (both left and right) so it can see everything around it. This can be changed for more realism
+            // float xdif = seen[i].transform.position.x - transform.position.x;
+            // float ydif = seen[i].transform.position.y - transform.position.y;
+            // Vector2 toObj = new Vector2(xdif, ydif);
+            // float ang = Vector2.SignedAngle(toObj, transform.up);
+
+            // if  ((ang < controller.viewAngle) && (ang > -controller.viewAngle)){
+            //      Debug.Log("I see " + seen[i]);
+            
+            
             //}
 			
-		}
+
         //After perceiving, it prioritizes with new information
 		Prioritize(threats, interests, group);
 	}
@@ -138,8 +154,6 @@ public class HerbAct : MonoBehaviour {
         }
         else {
             turn = Random.Range(-2.0f, 2.0f);
-            Debug.Log("Where are my homies?");
-            Debug.Log(name);
         }
         //This is how rotation works. The angle is the current angle, turn is added to change it slightly. Modulo is just to keep angle within 360 degrees
         angle += 1 * turn;
@@ -193,7 +207,8 @@ public class HerbAct : MonoBehaviour {
     //Eat the object of interest, increase fullness
     void Consume(GameObject item){
 		Destroy(item);
-		controller.fullness += 20;
+		controller.fullness += 10;
+        Debug.Log("<color=red>" + this.gameObject.name + "ate " + item.name + "!</color>");
 	}
 
     //Take your velocity and add the velocities of animals in your group. Divide by the group size. Velocities are normalized so that direction shared but speed is individual

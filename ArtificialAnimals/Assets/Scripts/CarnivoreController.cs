@@ -58,6 +58,10 @@ public class CarnivoreController : MonoBehaviour
 		else {
 			health -= 2;
 		}
+		if (health <= 0) {
+			Destroy(this.gameObject);
+			Debug.Log("<color=yellow>" + this.gameObject.name + "'s health fell to zero and died" +  "!</color>");
+		}
 		age++;
 	}
 

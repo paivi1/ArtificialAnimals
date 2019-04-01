@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2300440278734186879}
   - component: {fileID: 2300440278734186877}
   - component: {fileID: 5656526727950748919}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Herbivore
   m_TagString: Deer
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 99c6b4247d187b446b1b178901a13dd2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -181,6 +181,7 @@ MonoBehaviour:
   group: []
   threats: []
   interests: []
+  leafy: []
 --- !u!1 &6289492434258147508
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +198,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5584206729468488156
 Transform:
   m_ObjectHideFlags: 0
