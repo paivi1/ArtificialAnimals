@@ -12,7 +12,7 @@ public class PlantAct : MonoBehaviour {
 		rb2d = GetComponent<Rigidbody2D>();
 		controller = GetComponent<PlantController>();
 		InvokeRepeating("PhotoSyn", 5.0f, 5.0f);
-		InvokeRepeating("Reproduce", 10.0f, 20.0f);
+		InvokeRepeating("Reproduce", 10.0f, 40.0f);
 	}
 	
 	// Update is called once per frame

@@ -50,7 +50,6 @@ public class CarnivoreActuator : MonoBehaviour
         }
 		
 	}
-
 	void TurnTowards(Vector2 vel){
         
         if (Vector2.SignedAngle(vel, transform.up) <= 0){
@@ -95,13 +94,12 @@ public class CarnivoreActuator : MonoBehaviour
                     default:
                         break;
                 }
-            
 
-			
 		}
         //After perceiving, it prioritizes with new information
 		Prioritize(threats, interests, group);
 	}
+
 
     //Prioritize sets the state of the animal depending on its perceptions. Highest to lowest priority is: Nearby predator, nearby food, everything else
 	void Prioritize(List<GameObject> threats, List<GameObject> interests, List<GameObject> group){
@@ -168,6 +166,8 @@ public class CarnivoreActuator : MonoBehaviour
         //Set the velocity of the animal to where ever it's looking, multiplied by the speed
         rb2d.velocity = (transform.up * speed);
 	}
+
+
     //If there is a interest, move towards it
     void Pursue(GameObject posFocus){
         if (posFocus == null){
@@ -179,27 +179,27 @@ public class CarnivoreActuator : MonoBehaviour
         Vector2 focusDirection;
         hit = Physics2D.Raycast(transform.position + transform.up, transform.up, 3.0f);
         if (hit.collider != null){
-            Debug.Log("Saw " + hit.collider.name + "as " + this.gameObject.name);
             focusDirection = new Vector2 (posFocus.transform.position.x - hit.collider.transform.position.x + posFocus.transform.up.x - transform.position.x, posFocus.transform.position.y - hit.collider.transform.position.x + posFocus.transform.up.y - transform.position.y);
         } else {
             focusDirection = new Vector2 (posFocus.transform.position.x + posFocus.transform.up.x - transform.position.x, posFocus.transform.position.y + posFocus.transform.up.y - transform.position.y);
         }
+
         //Align the animals rotation with the direction vector
         TurnTowards(focusDirection);
+
         //Compute distance from interest. If close enough, eat it
 		float distance = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
         if (controller.energy > 10 && distance < 4.0 ) {
 			speed = 8;
 			controller.energy -= 0.3f;
-		}else {
+		} else {
 			speed = 3;
 		}
-        
+
         if (distance < 2.0 && controller.energy > 25) {
             rb2d.AddForce(transform.up * 2, ForceMode2D.Impulse);
             controller.energy -= 10.0f;
         }
-        
 		if (distance < 1.0) {
 			Consume(posFocus);
 		}
@@ -233,6 +233,7 @@ public class CarnivoreActuator : MonoBehaviour
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         rb2d.velocity = (transform.up * speed);
 	}
+
     //Eat the object of interest, increase fullness
     void Consume(GameObject item){
 		

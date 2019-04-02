@@ -63,12 +63,12 @@ public class CameraController : MonoBehaviour
         }
         if (Input.GetMouseButton(0)){
             
-            mousePosition = (Input.mousePosition - setPos + new Vector3 (-5,27, 0));
+            mousePosition = (Input.mousePosition - setPos + new Vector3 (0,-23, 0));
             mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            Collider2D clicked = Physics2D.OverlapCircle(mousePosition, 1.0f);
-            Debug.Log(mousePosition);
-            Debug.Log(clicked);
-            Instantiate(spr, mousePosition, Quaternion.identity);
+            Collider2D clicked = Physics2D.OverlapCircle(mousePosition, 1.5f);
+            //Debug.Log(mousePosition);
+            //Debug.Log(clicked);
+            //Instantiate(spr, mousePosition, Quaternion.identity);
 
             if (clicked != null){
                 target1 = clicked.gameObject;

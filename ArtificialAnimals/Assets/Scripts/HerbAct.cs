@@ -112,16 +112,13 @@ public class HerbAct : MonoBehaviour {
                         break;
                 }
             }
-            else{
-                Debug.Log(hit.collider.name);
-            }
                 
         }
-			
-
+		
         //After perceiving, it prioritizes with new information
 		Prioritize(threats, interests, group);
 	}
+    
 
     //Prioritize sets the state of the animal depending on its perceptions. Highest to lowest priority is: Nearby predator, nearby food, everything else
 	void Prioritize(List<GameObject> threats, List<GameObject> interests, List<GameObject> group){
@@ -191,6 +188,7 @@ public class HerbAct : MonoBehaviour {
         //Set the velocity of the animal to where ever it's looking, multiplied by the speed
         rb2d.velocity = (transform.up * speed);
 	}
+
     //If there is a interest, move towards it
     void Pursue(GameObject posFocus){
         if (posFocus == null){
@@ -217,6 +215,8 @@ public class HerbAct : MonoBehaviour {
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         rb2d.velocity = (transform.up * speed);
 	}
+
+
     //If a threat is near, avoid it
     void HuntedState(GameObject negFocus) {
 		//Expend energy to increase speed for a short while
@@ -235,7 +235,6 @@ public class HerbAct : MonoBehaviour {
         hit = Physics2D.Raycast(transform.position + transform.up, transform.up, 3.0f);
         
         if (hit.collider != null){
-            Debug.Log("Saw " + hit.collider.name + "as " + this.gameObject.name);
             focusDirection = new Vector2 (negFocus.transform.position.x + hit.collider.transform.position.x - transform.position.x, negFocus.transform.position.y + hit.collider.transform.position.y - transform.position.y);
         }
         else{
