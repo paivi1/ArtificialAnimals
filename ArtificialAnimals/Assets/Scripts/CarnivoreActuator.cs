@@ -5,7 +5,7 @@ using UnityEngine;
 public class CarnivoreActuator : MonoBehaviour
 {
 
-	public float speed = 5; //Animal speed
+	public float speed = 3; //Animal speed
     public float angle; //Current angle of the animals body (an angle of zero means it's facing towards the top of the screen)
 
 	[SerializeField]
@@ -38,7 +38,7 @@ public class CarnivoreActuator : MonoBehaviour
 		if (controller.state == 2){
 			HuntedState(negFocus);
 		}
-		else if (controller.state == 1){
+		else if (controller.state == 1 && posFocus != null){
 			speed = 5;
             Pursue(posFocus);
 		}
@@ -111,13 +111,37 @@ public class CarnivoreActuator : MonoBehaviour
     //Prioritize sets the state of the animal depending on its perceptions. Highest to lowest priority is: Nearby predator, nearby food, everything else
 	void Prioritize(List<GameObject> threats, List<GameObject> interests, List<GameObject> group){
 		if (threats.Count != 0) {
+            // The closest thread is the one to avoid 
 			negFocus = threats[0];
-			controller.state = 2;  //If aware of threats, change state to hunted, avoid first threat
+            // Find the distance to the first threat
+            float min = Mathf.Sqrt(Mathf.Pow(negFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(negFocus.transform.position.y - transform.position.y,2));
+			float temp;
+            // now find the closest threat
+            for (int i = 1; i < threats.Count; i++){
+                temp = Mathf.Sqrt(Mathf.Pow(threats[i].transform.position.x - transform.position.x, 2) + Mathf.Pow(threats[i].transform.position.y - transform.position.y,2));
+                if (temp < min){
+                    negFocus = threats[i];
+                    min = temp;
+                }
+            }
+            controller.state = 2;  //If aware of threats, change state to hunted, avoid first threat
                                    //We'll need a way to manage more than one threat, hopefully we can implement it
 		}
 		else if (interests.Count != 0) {
+            // The closest interest matters 
 			posFocus = interests[0]; //If no threats and interested, persue first interest
-			controller.state = 1; //State changed to interested
+			// Find the distance to the first interest
+            float min = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
+			float temp;
+            // now find the closest interest
+            for (int i = 1; i < interests.Count; i++){
+                temp = Mathf.Sqrt(Mathf.Pow(interests[i].transform.position.x - transform.position.x, 2) + Mathf.Pow(interests[i].transform.position.y - transform.position.y,2));
+                if (temp < min){
+                    posFocus = interests[i];
+                    min = temp;
+                }
+            }
+            controller.state = 1; //State changed to interested
 		}
 		else {			
 			controller.state = 0;//If no threats or interests, wander with group
@@ -152,7 +176,8 @@ public class CarnivoreActuator : MonoBehaviour
         //Compute distance from interest. If close enough, eat it
 		float distance = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
         if (distance < 3.0) {
-            speed = 10;
+            rb2d.AddForce(transform.up, ForceMode2D.Impulse);
+            controller.energy -= 25.0f;
         }
         else {speed = 5;};
 		if (distance < 1.0) {

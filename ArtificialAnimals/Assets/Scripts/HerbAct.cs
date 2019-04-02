@@ -44,11 +44,11 @@ public class HerbAct : MonoBehaviour {
     //Actions taken depend on it's current state
     //Speed is changed back to 1 here, in case it was changed in "HuntedState". I'll likely change this later because it's sloppy
 	void Update () {
-
+        
         if (controller.state == 2){
 			HuntedState(negFocus);
 		}
-		else if (controller.state == 1){
+		else if (controller.state == 1 && posFocus != null){
 			speed = 1;
             Pursue(posFocus);
 		}
@@ -133,13 +133,37 @@ public class HerbAct : MonoBehaviour {
     //Prioritize sets the state of the animal depending on its perceptions. Highest to lowest priority is: Nearby predator, nearby food, everything else
 	void Prioritize(List<GameObject> threats, List<GameObject> interests, List<GameObject> group){
 		if (threats.Count != 0) {
+            // The closest thread is the one to avoid 
 			negFocus = threats[0];
-			controller.state = 2;  //If aware of threats, change state to hunted, avoid first threat
+            // Find the distance to the first threat
+            float min = Mathf.Sqrt(Mathf.Pow(negFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(negFocus.transform.position.y - transform.position.y,2));
+			float temp;
+            // now find the closest threat
+            for (int i = 1; i < threats.Count; i++){
+                temp = Mathf.Sqrt(Mathf.Pow(threats[i].transform.position.x - transform.position.x, 2) + Mathf.Pow(threats[i].transform.position.y - transform.position.y,2));
+                if (temp < min){
+                    negFocus = threats[i];
+                    min = temp;
+                }
+            }
+            controller.state = 2;  //If aware of threats, change state to hunted, avoid first threat
                                    //We'll need a way to manage more than one threat, hopefully we can implement it
 		}
 		else if (interests.Count != 0) {
+            // The closest interest matters 
 			posFocus = interests[0]; //If no threats and interested, persue first interest
-			controller.state = 1; //State changed to interested
+			// Find the distance to the first interest
+            float min = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
+			float temp;
+            // now find the closest interest
+            for (int i = 1; i < interests.Count; i++){
+                temp = Mathf.Sqrt(Mathf.Pow(interests[i].transform.position.x - transform.position.x, 2) + Mathf.Pow(interests[i].transform.position.y - transform.position.y,2));
+                if (temp < min){
+                    posFocus = interests[i];
+                    min = temp;
+                }
+            }
+            controller.state = 1; //State changed to interested
 		}
 		else {			
 			controller.state = 0;//If no threats or interests, wander with group
@@ -189,13 +213,16 @@ public class HerbAct : MonoBehaviour {
     void HuntedState(GameObject negFocus) {
 		//Expend energy to increase speed for a short while
 		if (controller.energy > 10 ){
-			rb2d.AddForce(transform.up, ForceMode2D.Impulse);
+            speed = 10;
 			controller.energy -= 0.5f;
 		} else {
 			speed = 1;
 		}
         //Same thing as in 'Pursue' but we use the negative direction as a parameter for 'TurnTowards' so that it turns in the opposite direction
         Vector2 focusDirection = new Vector2 (negFocus.transform.position.x - transform.position.x, negFocus.transform.position.y - transform.position.y);
+        hit = Physics2D.Raycast(transform.position, transform.up, 2.0f , 8);
+        Debug.Log(hit.collider);
+
         TurnTowards(-focusDirection);
         //Turn and move. Details above in "Wander"
         angle += 2 * turn;
@@ -217,6 +244,9 @@ public class HerbAct : MonoBehaviour {
 		Vector2 currVel = rb2d.velocity;
 		int total = 0;
 		for (int peer = 1; peer < group.Count; peer++){
+            if (group[peer] == null){
+                continue;
+            }
 			currVel += group[peer].GetComponent<Rigidbody2D>().velocity.normalized;
 			total++;
 		}
