@@ -9,10 +9,14 @@ public class PlantController : MonoBehaviour {
 	public float hydration = 100;
 	public float health = 100;
 	public string diet = "producer";
+	public GameObject env;
+	private EnvironmentalController envCon;
 
 	// Use this for initialization
 	void Start () {
 		InvokeRepeating("Metabolize", 1.0f, 1.0f);
+		env = GameObject.Find("Environment");
+		envCon = env.GetComponent<EnvironmentalController>();
 	}
 	
 	// Update is called once per frame
@@ -36,6 +40,10 @@ public class PlantController : MonoBehaviour {
 		if (health <= 0) {
 			Destroy(this.gameObject);
 			Debug.Log("<color=yellow>" + this.gameObject.name + "'s health fell to zero and died" +  "!</color>");
+		}
+
+		if(envCon.rain == true){
+			hydration += 5;
 		}
 	}
 

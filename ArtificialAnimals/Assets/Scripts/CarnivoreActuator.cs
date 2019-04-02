@@ -5,7 +5,7 @@ using UnityEngine;
 public class CarnivoreActuator : MonoBehaviour
 {
 
-	public float speed = 3; //Animal speed
+	public float speed = 2; //Animal speed
     public float angle; //Current angle of the animals body (an angle of zero means it's facing towards the top of the screen)
 
 	[SerializeField]
@@ -23,6 +23,7 @@ public class CarnivoreActuator : MonoBehaviour
     private List<GameObject> threats; //Stores a list of gameobjects that are threats (Wolf)
     [SerializeField]
     private List<GameObject> interests; //Stores a list of gameobjects that are of interest (Flower). I hope to expand this to water as well
+    private RaycastHit2D hit;
 
 
 	// Use this for initialization
@@ -31,6 +32,7 @@ public class CarnivoreActuator : MonoBehaviour
 		controller = GetComponent<CarnivoreController>();
 		angle = Random.Range(0, 360);
 		InvokeRepeating("Perceive", 0.0f, 0.3f);
+        InvokeRepeating("Reproduce", 10.0f, 20.0f);
 	}
 	
 	// Update is called once per frame
@@ -72,21 +74,15 @@ public class CarnivoreActuator : MonoBehaviour
         //Here we sort the percieved objects into three categories
 		for (int i = 0; i < seen.Length; i++) {
 
-            //This bit of code here checks if the object is within a certain angle (think of it as it only seeing things in front of it)
-            //This way, it only "sees" things within its viewAngle, otherwise it goes unseen
-            //Right now, controller.viewAngle is 180 degrees (both left and right) so it can see everything around it. This can be changed for more realism
-            // float xdif = seen[i].transform.position.x - transform.position.x;
-            // float ydif = seen[i].transform.position.y - transform.position.y;
-            // Vector2 toObj = new Vector2(xdif, ydif);
-            // float ang = Vector2.SignedAngle(toObj, transform.up);
-
-            // if  ((ang < controller.viewAngle) && (ang > -controller.viewAngle)){
-            //      Debug.Log("I see " + seen[i]);
-
                
                 switch (seen[i].tag) {
                     case "Deer":
                         if (controller.fullness< 80){
+                            interests.Add(seen[i].gameObject);
+                        }
+                        break;
+                    case "Water":
+                        if (controller.hydration < 40) {
                             interests.Add(seen[i].gameObject);
                         }
                         break;
@@ -99,7 +95,6 @@ public class CarnivoreActuator : MonoBehaviour
                     default:
                         break;
                 }
-            //}
             
 
 			
@@ -150,11 +145,20 @@ public class CarnivoreActuator : MonoBehaviour
 	}
 
 	void Wander(){
-        if (group.Count > 1){
-            TurnTowards(GroupVelocity(group));
+
+        Vector2 focusDirection;
+        hit = Physics2D.Raycast(transform.position + transform.up, transform.up, 1.0f);
+
+        if (hit.collider != null){
+            focusDirection = new Vector2 (hit.collider.transform.position.x - transform.position.x, hit.collider.transform.position.y - transform.position.y);
+            TurnTowards(-focusDirection);
         }
-        else {
+        else{
+            if (group.Count > 1) {
+            TurnTowards(GroupVelocity(group));
+            } else {
             turn = Random.Range(-2.0f, 2.0f);
+            }
         }
         //This is how rotation works. The angle is the current angle, turn is added to change it slightly. Modulo is just to keep angle within 360 degrees
         angle += 1 * turn;
@@ -168,18 +172,34 @@ public class CarnivoreActuator : MonoBehaviour
     void Pursue(GameObject posFocus){
         if (posFocus == null){
             controller.state = 0;
+            return;
         }
+        
         //Find the direction vector towards the interest from the animals position
-        Vector2 focusDirection = new Vector2 (posFocus.transform.position.x - transform.position.x, posFocus.transform.position.y - transform.position.y);
+        Vector2 focusDirection;
+        hit = Physics2D.Raycast(transform.position + transform.up, transform.up, 3.0f);
+        if (hit.collider != null){
+            Debug.Log("Saw " + hit.collider.name + "as " + this.gameObject.name);
+            focusDirection = new Vector2 (posFocus.transform.position.x - hit.collider.transform.position.x + posFocus.transform.up.x - transform.position.x, posFocus.transform.position.y - hit.collider.transform.position.x + posFocus.transform.up.y - transform.position.y);
+        } else {
+            focusDirection = new Vector2 (posFocus.transform.position.x + posFocus.transform.up.x - transform.position.x, posFocus.transform.position.y + posFocus.transform.up.y - transform.position.y);
+        }
         //Align the animals rotation with the direction vector
         TurnTowards(focusDirection);
         //Compute distance from interest. If close enough, eat it
 		float distance = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
-        if (distance < 3.0) {
-            rb2d.AddForce(transform.up, ForceMode2D.Impulse);
-            controller.energy -= 25.0f;
+        if (controller.energy > 10 && distance < 4.0 ) {
+			speed = 8;
+			controller.energy -= 0.3f;
+		}else {
+			speed = 3;
+		}
+        
+        if (distance < 2.0 && controller.energy > 25) {
+            rb2d.AddForce(transform.up * 2, ForceMode2D.Impulse);
+            controller.energy -= 10.0f;
         }
-        else {speed = 5;};
+        
 		if (distance < 1.0) {
 			Consume(posFocus);
 		}
@@ -192,6 +212,10 @@ public class CarnivoreActuator : MonoBehaviour
 	}
     //If a threat is near, avoid it
     void HuntedState(GameObject negFocus) {
+        if (negFocus == null){
+            controller.state = 0;
+            return;
+        }
 		//Expend energy to increase speed for a short while
 		if (controller.energy > 10 ){
 			speed = 10;
@@ -211,14 +235,22 @@ public class CarnivoreActuator : MonoBehaviour
 	}
     //Eat the object of interest, increase fullness
     void Consume(GameObject item){
-		Destroy(item);
-		controller.fullness += 15;
-        Debug.Log("<color=red>" + this.gameObject.name + " ate " + item.name + "!</color>");
+		
+        if (item.tag == "Water"){
+            controller.hydration = 100; 
+            posFocus = null;
+            return;
+        }
+        else {
+            Destroy(item);
+            controller.fullness += 15;
+            Debug.Log("<color=red>" + this.gameObject.name + " ate " + item.name + "!</color>");
 
-        for (int peer = 1; peer < group.Count; peer++){
-			group[peer].GetComponent<CarnivoreController>().fullness += 15;
-            Debug.Log("<color=green>" + this.gameObject.name + " shared some food with " +  group[peer].name + "!</color>");
-		}
+            for (int peer = 1; peer < group.Count; peer++){
+                group[peer].GetComponent<CarnivoreController>().fullness += 15;
+                Debug.Log("<color=green>" + this.gameObject.name + " shared some food with " +  group[peer].name + "!</color>");
+            }
+        }
         
 	}
 
@@ -235,5 +267,13 @@ public class CarnivoreActuator : MonoBehaviour
 			currVel /= group.Count;
 		}
 		return currVel;
+	}
+    void Reproduce(){
+		if (controller.GetHealth() > 30 && controller.age > 60) {
+			float x = this.transform.position.x + Random.Range(-2.0f, 2.0f);
+			float y = this.transform.position.y + Random.Range(-2.0f, 2.0f);
+			Vector2 birthplace = new Vector2(x,y);
+			Instantiate(this.transform, birthplace, Quaternion.identity);
+		}
 	}
 }

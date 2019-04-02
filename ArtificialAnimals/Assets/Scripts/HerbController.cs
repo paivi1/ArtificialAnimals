@@ -18,14 +18,15 @@ public class HerbController : MonoBehaviour {
 	void Start () {
 		viewAngle = 180;
 		fullness = 100;
-		hydration = 100;
+		hydration = 40;
 		health = 100;
 		energy = 100;
-		age = 1;
+		age = 0;
 		state = 0;
 		vision = 5;
 		diet = "herbivore";
 		InvokeRepeating("Metabolize", 1.0f, 1.0f);
+		Growth();
 	}
 	
 	// Update is called once per frame
@@ -37,14 +38,14 @@ public class HerbController : MonoBehaviour {
 		if (fullness > 0) {
 			fullness -= 2;
 			if (health < 100){
-				health += 2;
+				health += 1;
 			}
 			if (energy < 100) {
 				energy += 1;
 			}
 		}
 		else {
-			health -= 0.5f;
+			health -= 3f;
 		}
 		if (hydration > 0) {
 			hydration -= 0.5f;
@@ -56,14 +57,21 @@ public class HerbController : MonoBehaviour {
 			}
 		}
 		else {
-			health -= 2;
+			health -= 3;
 		}
 		if (health <= 0) {
 			Destroy(this.gameObject);
 			Debug.Log("<color=yellow>" + this.gameObject.name + "'s health fell to zero and died" +  "!</color>");
 		}
 		age++;
+		Growth();
 	}
+	void Growth(){
+		if (age < 60){
+			transform.localScale = new Vector3(1.5f + (float)age / 30, 1.5f + (float)age / 30, 0);
+		}
+        
+    }
 
 	public float GetFullness(){
 		return fullness;

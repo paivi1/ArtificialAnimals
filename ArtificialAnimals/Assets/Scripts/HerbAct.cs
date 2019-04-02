@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HerbAct : MonoBehaviour {
 
-	public float speed = 1; //Animal speed
+	public float speed = 3; //Animal speed
     public float angle; //Current angle of the animals body (an angle of zero means it's facing towards the top of the screen)
 
 	[SerializeField]
@@ -37,6 +37,7 @@ public class HerbAct : MonoBehaviour {
         leafy = new List<GameObject>();
 		//InvokeRepeating("TurnTowards", 0.0f, 0.1f);
 		InvokeRepeating("Perceive", 0.0f, 0.5f);
+        InvokeRepeating("Reproduce", 10.0f, 20.0f);
 		
 	}
 	
@@ -93,6 +94,11 @@ public class HerbAct : MonoBehaviour {
                             interests.Add(seen[i].gameObject);
                         }
                         break;
+                    case "Water":
+                        if (controller.hydration < 50){
+                            interests.Add(seen[i].gameObject);
+                        }
+                        break;
                     case "Deer":
                         group.Add(seen[i].gameObject);
                         break;
@@ -111,19 +117,6 @@ public class HerbAct : MonoBehaviour {
             }
                 
         }
-            //This bit of code here checks if the object is within a certain angle (think of it as it only seeing things in front of it)
-            //This way, it only "sees" things within its viewAngle, otherwise it goes unseen
-            //Right now, controller.viewAngle is 180 degrees (both left and right) so it can see everything around it. This can be changed for more realism
-            // float xdif = seen[i].transform.position.x - transform.position.x;
-            // float ydif = seen[i].transform.position.y - transform.position.y;
-            // Vector2 toObj = new Vector2(xdif, ydif);
-            // float ang = Vector2.SignedAngle(toObj, transform.up);
-
-            // if  ((ang < controller.viewAngle) && (ang > -controller.viewAngle)){
-            //      Debug.Log("I see " + seen[i]);
-            
-            
-            //}
 			
 
         //After perceiving, it prioritizes with new information
@@ -173,12 +166,23 @@ public class HerbAct : MonoBehaviour {
 		
     //Wander will have the animal move with its nearby neighbors (group). If there are none, turn acts randomly
 	void Wander(){
-        if (group.Count > 1){
+
+        Vector2 focusDirection;
+        hit = Physics2D.Raycast(transform.position + transform.up, transform.up, 1.0f);
+
+        if (hit.collider != null){
+            focusDirection = new Vector2 (hit.collider.transform.position.x - transform.position.x, hit.collider.transform.position.y - transform.position.y);
+            TurnTowards(-focusDirection);
+        }
+        else{
+            if (group.Count > 1) {
             TurnTowards(GroupVelocity(group));
-        }
-        else {
+            } else {
             turn = Random.Range(-2.0f, 2.0f);
+            }
         }
+
+        
         //This is how rotation works. The angle is the current angle, turn is added to change it slightly. Modulo is just to keep angle within 360 degrees
         angle += 1 * turn;
         angle = angle % 360;
@@ -191,6 +195,7 @@ public class HerbAct : MonoBehaviour {
     void Pursue(GameObject posFocus){
         if (posFocus == null){
             controller.state = 0;
+            return;
         }
         //Find the direction vector towards the interest from the animals position
         Vector2 focusDirection = new Vector2 (posFocus.transform.position.x - transform.position.x, posFocus.transform.position.y - transform.position.y);
@@ -199,6 +204,9 @@ public class HerbAct : MonoBehaviour {
         //Compute distance from interest. If close enough, eat it
 		float distance = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
 
+        if (distance < 3 && posFocus.tag == "Water"){
+            Consume(posFocus);
+        }
 		if (distance < 0.5) {
 			Consume(posFocus);
 		}
@@ -212,19 +220,29 @@ public class HerbAct : MonoBehaviour {
     //If a threat is near, avoid it
     void HuntedState(GameObject negFocus) {
 		//Expend energy to increase speed for a short while
+        if (negFocus == null){
+            controller.state = 0;
+            return;
+        }
 		if (controller.energy > 10 ){
             speed = 10;
-			controller.energy -= 0.5f;
+			controller.energy -= 0.2f;
 		} else {
 			speed = 1;
 		}
         //Same thing as in 'Pursue' but we use the negative direction as a parameter for 'TurnTowards' so that it turns in the opposite direction
-        Vector2 focusDirection = new Vector2 (negFocus.transform.position.x - transform.position.x, negFocus.transform.position.y - transform.position.y);
-        hit = Physics2D.Raycast(transform.position, transform.up, 5.0f , 8, -1.0f, 5.0f);
+        Vector2 focusDirection;
+        hit = Physics2D.Raycast(transform.position + transform.up, transform.up, 3.0f);
+        
         if (hit.collider != null){
-            Debug.Log(hit.collider);
-            
+            Debug.Log("Saw " + hit.collider.name + "as " + this.gameObject.name);
+            focusDirection = new Vector2 (negFocus.transform.position.x + hit.collider.transform.position.x - transform.position.x, negFocus.transform.position.y + hit.collider.transform.position.y - transform.position.y);
         }
+        else{
+            focusDirection = new Vector2 (negFocus.transform.position.x - transform.position.x, negFocus.transform.position.y - transform.position.y);
+        }
+
+        
         
 
         TurnTowards(-focusDirection);
@@ -235,11 +253,20 @@ public class HerbAct : MonoBehaviour {
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         rb2d.velocity = (transform.up * speed);
 	}
+
     //Eat the object of interest, increase fullness
     void Consume(GameObject item){
-		Destroy(item);
-		controller.fullness += 10;
-        Debug.Log("<color=red>" + this.gameObject.name + " ate " + item.name + "!</color>");
+        if (item.tag == "Water"){
+            controller.hydration = 100; 
+            posFocus = null;
+            return;
+        }
+        else{
+            Destroy(item);
+            controller.fullness += 10;
+            Debug.Log("<color=red>" + this.gameObject.name + " ate " + item.name + "!</color>");
+        }
+		
 	}
 
     //Take your velocity and add the velocities of animals in your group. Divide by the group size. Velocities are normalized so that direction shared but speed is individual
@@ -252,6 +279,9 @@ public class HerbAct : MonoBehaviour {
                 continue;
             }
 			currVel += group[peer].GetComponent<Rigidbody2D>().velocity.normalized;
+            if (group[peer].GetComponent<HerbController>().state == 2){
+                controller.state = 2;
+            }
 			total++;
 		}
 		if (total > 0) {
@@ -260,7 +290,14 @@ public class HerbAct : MonoBehaviour {
 		return currVel;
 	}
 
-
+    void Reproduce(){
+		if (controller.GetHealth() > 30 && controller.age > 60) {
+			float x = this.transform.position.x + Random.Range(-2.0f, 2.0f);
+			float y = this.transform.position.y + Random.Range(-2.0f, 2.0f);
+			Vector2 birthplace = new Vector2(x,y);
+			Instantiate(this.transform, birthplace, Quaternion.identity);
+		}
+	}
 
 }
 

@@ -17,11 +17,11 @@ public class CarnivoreController : MonoBehaviour
 	// Use this for initialization
 	void Start () {
 		viewAngle = 180;
-		vision = 20;
+		vision = 10;
 		fullness = 100;
 		hydration = 100;
 		health = 100;
-		age = 1;
+		age = 0;
 		energy = 100;
 		state = 0;
 		diet = "carnivore";
@@ -63,7 +63,15 @@ public class CarnivoreController : MonoBehaviour
 			Debug.Log("<color=yellow>" + this.gameObject.name + "'s health fell to zero and died" +  "!</color>");
 		}
 		age++;
+		Growth();
+		
 	}
+	void Growth(){
+		if (age < 60){
+			transform.localScale = new Vector3(1.5f + (float)age / 30, 1.5f + (float)age / 30, 0);
+		}
+        
+    }
 
 	public float GetFullness(){
 		return fullness;

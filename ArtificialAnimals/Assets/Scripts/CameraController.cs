@@ -7,7 +7,7 @@ public class CameraController : MonoBehaviour
     public GameObject target1;
     public GameObject spr;
     public float scale = 4f;
-    public float moveSpeed = 0.1f;
+    public float moveSpeed = 0.01f;
     private Transform t1;
     private Camera cam;
     private Vector3 mousePosition;
@@ -73,8 +73,6 @@ public class CameraController : MonoBehaviour
             if (clicked != null){
                 target1 = clicked.gameObject;
             }
-
-
         }
 
         

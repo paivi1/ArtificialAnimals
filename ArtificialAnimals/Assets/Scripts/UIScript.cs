@@ -30,7 +30,21 @@ public class UIScript : MonoBehaviour
             txt3.text = target.GetComponent<HerbController>().hydration.ToString();
             txt4.text = target.GetComponent<HerbController>().health.ToString();
             txt5.text = target.GetComponent<HerbController>().energy.ToString();
-            txt6.text = target.GetComponent<HerbController>().state.ToString();
+            //txt6.text = target.GetComponent<HerbController>().state.ToString();
+            switch(target.GetComponent<HerbController>().state){
+                case 0:
+                    txt6.text = "Wandering";
+                    break;
+                case 1:
+                    txt6.text = "Interested";
+                    break;
+                case 2:
+                    txt6.text = "Scared";
+                    break;
+                default:
+                    break;
+
+            }
         }
         else if (target.GetComponent<CarnivoreController>() != null){
             txt1.text = target.name.ToString();
@@ -38,7 +52,21 @@ public class UIScript : MonoBehaviour
             txt3.text = target.GetComponent<CarnivoreController>().hydration.ToString();
             txt4.text = target.GetComponent<CarnivoreController>().health.ToString();
             txt5.text = target.GetComponent<CarnivoreController>().energy.ToString();
-            txt6.text = target.GetComponent<CarnivoreController>().state.ToString();
+            //txt6.text = target.GetComponent<HerbController>().state.ToString();
+            switch(target.GetComponent<CarnivoreController>().state){
+                case 0:
+                    txt6.text = "Wandering";
+                    break;
+                case 1:
+                    txt6.text = "Interested";
+                    break;
+                case 2:
+                    txt6.text = "Scared";
+                    break;
+                default:
+                    break;
+            }
+
         }
         else if(target.GetComponent<PlantController>() != null){
             txt1.text = target.name.ToString();

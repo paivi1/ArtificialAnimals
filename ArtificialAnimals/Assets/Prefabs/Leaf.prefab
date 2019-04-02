@@ -111,6 +111,7 @@ MonoBehaviour:
   hydration: 100
   health: 100
   diet: producer
+  env: {fileID: 0}
 --- !u!50 &2525993365142310055
 Rigidbody2D:
   serializedVersion: 4
