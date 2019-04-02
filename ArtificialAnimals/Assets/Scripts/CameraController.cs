@@ -48,6 +48,12 @@ public class CameraController : MonoBehaviour
             transform.position = setPos;
         
         }
+        if (Input.GetKey("a")){
+            cam.orthographicSize += 1;
+        }
+        if (Input.GetKey("s") && cam.orthographicSize > 5){
+            cam.orthographicSize -= 1;
+        }
          
         if (Input.GetMouseButton(1)) {
             mousePosition = Input.mousePosition;
@@ -59,7 +65,7 @@ public class CameraController : MonoBehaviour
             
             mousePosition = (Input.mousePosition - setPos + new Vector3 (-5,27, 0));
             mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            Collider2D clicked = Physics2D.OverlapPoint(mousePosition);
+            Collider2D clicked = Physics2D.OverlapCircle(mousePosition, 1.0f);
             Debug.Log(mousePosition);
             Debug.Log(clicked);
             Instantiate(spr, mousePosition, Quaternion.identity);
@@ -77,6 +83,7 @@ public class CameraController : MonoBehaviour
             if (following) {
                 following = false;
                 setPos = new Vector3 (0,-20,-10);
+                cam.orthographicSize = 25;
             }
             else {
                 following = true;

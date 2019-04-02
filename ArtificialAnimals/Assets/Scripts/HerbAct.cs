@@ -220,8 +220,12 @@ public class HerbAct : MonoBehaviour {
 		}
         //Same thing as in 'Pursue' but we use the negative direction as a parameter for 'TurnTowards' so that it turns in the opposite direction
         Vector2 focusDirection = new Vector2 (negFocus.transform.position.x - transform.position.x, negFocus.transform.position.y - transform.position.y);
-        hit = Physics2D.Raycast(transform.position, transform.up, 2.0f , 8);
-        Debug.Log(hit.collider);
+        hit = Physics2D.Raycast(transform.position, transform.up, 5.0f , 8, -1.0f, 5.0f);
+        if (hit.collider != null){
+            Debug.Log(hit.collider);
+            
+        }
+        
 
         TurnTowards(-focusDirection);
         //Turn and move. Details above in "Wander"
