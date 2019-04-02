@@ -189,7 +189,7 @@ public class HerbAct : MonoBehaviour {
     void HuntedState(GameObject negFocus) {
 		//Expend energy to increase speed for a short while
 		if (controller.energy > 10 ){
-			speed = 10;
+			rb2d.AddForce(transform.up, ForceMode2D.Impulse);
 			controller.energy -= 0.5f;
 		} else {
 			speed = 1;
@@ -208,7 +208,7 @@ public class HerbAct : MonoBehaviour {
     void Consume(GameObject item){
 		Destroy(item);
 		controller.fullness += 10;
-        Debug.Log("<color=red>" + this.gameObject.name + "ate " + item.name + "!</color>");
+        Debug.Log("<color=red>" + this.gameObject.name + " ate " + item.name + "!</color>");
 	}
 
     //Take your velocity and add the velocities of animals in your group. Divide by the group size. Velocities are normalized so that direction shared but speed is individual

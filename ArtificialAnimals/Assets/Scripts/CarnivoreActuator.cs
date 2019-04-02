@@ -151,7 +151,10 @@ public class CarnivoreActuator : MonoBehaviour
         TurnTowards(focusDirection);
         //Compute distance from interest. If close enough, eat it
 		float distance = Mathf.Sqrt(Mathf.Pow(posFocus.transform.position.x - transform.position.x, 2) + Mathf.Pow(posFocus.transform.position.y - transform.position.y,2));
-
+        if (distance < 3.0) {
+            speed = 10;
+        }
+        else {speed = 5;};
 		if (distance < 1.0) {
 			Consume(posFocus);
 		}
@@ -185,11 +188,11 @@ public class CarnivoreActuator : MonoBehaviour
     void Consume(GameObject item){
 		Destroy(item);
 		controller.fullness += 15;
-        Debug.Log("<color=red>" + this.gameObject.name + "ate " + item.name + "!</color>");
+        Debug.Log("<color=red>" + this.gameObject.name + " ate " + item.name + "!</color>");
 
         for (int peer = 1; peer < group.Count; peer++){
 			group[peer].GetComponent<CarnivoreController>().fullness += 15;
-            Debug.Log("<color=green>" + this.gameObject.name + " shared some food with" +  group[peer].name + "!</color>");
+            Debug.Log("<color=green>" + this.gameObject.name + " shared some food with " +  group[peer].name + "!</color>");
 		}
         
 	}

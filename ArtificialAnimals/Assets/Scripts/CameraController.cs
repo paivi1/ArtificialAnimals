@@ -9,23 +9,43 @@ public class CameraController : MonoBehaviour
 
     private Transform t1;
     private Camera cam;
+    private Vector3 mousePosition;
+    public float moveSpeed = 0.1f;
+
 
 
     // Use this for initialization
     void Start()
     {   
         cam = GetComponent<Camera>();
-        t1 = target1.transform;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (target1 != null)
-        {
-            transform.position = new Vector3(t1.position.x, t1.position.y, -10);
-            cam.orthographicSize = 25;
-            
+         
+        if (Input.GetMouseButton(1)) {
+            mousePosition = Input.mousePosition;
+            mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            transform.position = Vector3.Lerp(transform.position, mousePosition, moveSpeed);
         }
+        if (Input.GetMouseButton(0)){
+            
+            mousePosition = Input.mousePosition;
+            mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            Collider2D clicked = Physics2D.OverlapPoint(mousePosition);
+            Debug.Log(mousePosition);
+            Debug.Log(clicked);
+
+            if (clicked != null){
+                target1 = clicked.gameObject;
+            }
+
+
+        }
+
+
     }
+ 
 }
