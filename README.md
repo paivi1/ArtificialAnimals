@@ -4,7 +4,11 @@ Competitive Multi-Agent Simulation for A.I. Class
 Here's my final (group) project for the third-year class "Introduction to Artifical Intelligence".
 
 In this project I attempted to create a 2-dimensional simulation of a very very very simplified forest ecosystem. The ecosystem consisted of Plants (Producers), Deer (Herbivores),
-and Wolves that look a bit like foxes (Carnivores) as well as some abiotic features such as boulders and ponds. The inhabitants had the following properties and behaviors:
+and Wolves that look a bit like foxes (Carnivores) as well as some abiotic features such as boulders and ponds. 
+
+The goal here was to create a closed system with multiple 'intelligent' agents who work to achieve a zero-sum goal (living long enough to reproduce). The agents need to consume other agents in adherance to their architype's diet in order to fend off hunger. From an engineering standpoint I had hoped to tweak the behaviors and variables in a way that achieves the same balance seen in a natural ecosystem's carrying capacity.
+
+The inhabitants had the following properties and behaviors:
 
 <h2>Producer's Properties:</h2> 
 
