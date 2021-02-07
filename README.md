@@ -8,6 +8,8 @@ and Wolves that look a bit like foxes (Carnivores) as well as some abiotic featu
 
 The goal here was to create a closed system with multiple 'intelligent' agents who work to achieve a zero-sum goal (living long enough to reproduce). The agents need to consume other agents in adherance to their architype's diet in order to fend off hunger. From an engineering standpoint I had hoped to tweak the behaviors and variables in a way that achieves the same balance seen in a natural ecosystem's carrying capacity.
 
+<img src="artificialAnimalsSnip.PNG">
+
 The inhabitants had the following properties and behaviors:
 
 <h2>Producer's Properties:</h2> 
